@@ -9,7 +9,8 @@ const listGroups = [
 
 const sendUrl = env.SEND_URL
 const listKeyword = ['giao lưu', 'nháy', 'mẫu mới'];
+const timeRefresh = env.TIME_REFRESH
 
 const facebookEmail = env.FACEBOOK_EMAIL;
 const facebookPassword = env.FACEBOOK_PASSWORD
-module.exports = { sendUrl, listGroups, listKeyword, facebookEmail, facebookPassword }
+module.exports = {timeRefresh, sendUrl, listGroups, listKeyword, facebookEmail, facebookPassword }

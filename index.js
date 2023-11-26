@@ -3,7 +3,7 @@ require("dotenv").config();
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { clearCookies } = require('./utils/cookies');
 var path = require('path');
-const { listGroups, sendUrl } = require('./utils/config');
+const { listGroups, sendUrl, timeRefresh } = require('./utils/config');
 const { default: axios } = require("axios");
 let mainWindow;
 
@@ -98,11 +98,11 @@ function openTab(url) {
     // Add the tab window to the array
     tabs.push(tabWindow);
 
-    // setInterval(async () => {
-    //     await tabWindow.reload();
-    //     fire();
-    //     scrollWindow()
-    // }, 15000)
+    setInterval(async () => {
+        await tabWindow.reload();
+        fire();
+        scrollWindow()
+    }, timeRefresh)
 
     function scrollWindow() {
         tabWindow.webContents.executeJavaScript(`
