@@ -1,0 +1,23 @@
+{
+  "name": "facebook-post-clawer",
+  "version": "1.0.0",
+  "description": "clawer facebook post in group",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "clawer",
+    "electorn",
+    "puppeteer"
+  ],
+  "author": "huuhieu17",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "electron": "^27.1.2",
+    "puppeteer": "^21.5.2"
+  }
+}
