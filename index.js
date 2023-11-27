@@ -157,9 +157,7 @@ function openTab(url) {
             const listImg = [];
             const mediaElement = item.querySelector('.dv.dw');
             if(mediaElement){
-                const mediaElement1 = item.querySelector('.dx.dy');
-                if(mediaElement1){
-                    const queryAllLinkTag = mediaElement1.querySelectorAll('a');
+                    const queryAllLinkTag = mediaElement.querySelectorAll('.dx.dy');
                     console.log(queryAllLinkTag)
                     if(queryAllLinkTag.length > 0){
                         queryAllLinkTag.forEach(qrl => {
@@ -169,7 +167,7 @@ function openTab(url) {
                             }
                         })
                     }
-                }
+                
             }
 
             const obj = {
