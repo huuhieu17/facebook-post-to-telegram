@@ -68,12 +68,12 @@ ipcMain.on('send-message', (e, data) => {
 function openTab(url) {
     // Create a new tab window
     const tabWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1920,
+        height: 1080,
         webPreferences: {
             // preload: path.join(__dirname, 'preload.js'), // Set the preload script
             nodeIntegration: true,
-            contextIsolation: false,
+            contextIsolation: true,
             enableRemoteModule: true,
         },
     });
@@ -107,83 +107,77 @@ function openTab(url) {
     function scrollWindow() {
         tabWindow.webContents.executeJavaScript(`
         setInterval(() => {
-            window.scrollTo(0, Math.floor(Math.random() * 1001))
+            window.scrollTo(1000, Math.floor(Math.random() * 5001))
         }, 2000)
         `)
     }
 
     function fire() {
-        tabWindow.webContents.executeJavaScript(`
-        const { ipcRenderer } = require('electron');
-        const { listKeyword } = require('./utils/config');
-        const articles = document.querySelectorAll('article');
-        const listObj = [];
-        articles.forEach(item => {
-            // get content post
-            const content = item.querySelector('.ds');
-            const contentText = content.innerText;
-            // check post match
-
-            const matchPost = listKeyword.reduce((count, item) => {
-                if (contentText.includes(item)) {
-                  return count + 1;
-                }
-                return count;
-              }, 0);
-            
-            if(matchPost < 2) return;
-
-            const dataset = item.dataset.ft;
-            const parseDataset = JSON.parse(dataset);
-            const currentLink = document.location.href;
-            const splitLink = currentLink.split('/');
-            // get header info
-            const header = item.querySelector('.bs.dg.dq.dr');
-            const listItemHeader = header ? header.querySelectorAll('strong') : [];
-            let headerObj = {}
-            if(listItemHeader.length > 0){
-                // get name sender and name group
-                const sender = listItemHeader[0].querySelector('a');
-                const group = listItemHeader[1].querySelector('a');
-                headerObj = {
-                    senderName: sender && sender.innerText,
-                    groupName: group && group.innerText,
-
-                }
-            }
-
-
-            // get image
-            const listImg = [];
-            const mediaElement = item.querySelector('.dv.dw');
-            if(mediaElement){
-                    const queryAllLinkTag = mediaElement.querySelectorAll('.dx.dy');
-                    console.log(queryAllLinkTag)
-                    if(queryAllLinkTag.length > 0){
-                        queryAllLinkTag.forEach(qrl => {
-                            const img = qrl.querySelector('img');
-                            if(img){
-                                listImg.push(img.src)
+        const websource = {
+            code: `
+            const listObj = [];
+            const ipcRenderer = require('electron').ipcRenderer;
+            const { listKeyword } = require('./utils/config');
+            const feed = document.querySelector("[role='feed']");
+            setTimeout(() => {
+                const posts = document.querySelectorAll('.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z');
+                posts.forEach(post => {
+                    const postElement = post.querySelector('.x1n2onr6.x1ja2u2z');
+                    if(postElement){
+                        const contentElementWithoutImg = postElement.querySelector('.x5yr21d.xyqdw3p');
+                        const contentElementWithImg = postElement.querySelector('[data-ad-comet-preview="message"]')
+                        const contentText = contentElementWithoutImg ? contentElementWithoutImg.innerText : contentElementWithImg ? contentElementWithImg.innerText : ''
+                        const matchPost = listKeyword.reduce((count, item) => {
+                            if (contentText.includes(item)) {
+                                return count + 1;
                             }
-                        })
+                            return count;
+                        }, 0);
+                        console.log(matchPost, contentText, listKeyword)
+                        if(matchPost < 2) return;
+                       
+
+                        const currentLink = document.location.href;
+                        const splitLink = currentLink.split('/');
+
+                        const headerLinkElement = postElement.querySelector('a[href*="/user/"]');
+                        const groupNameElement = document.querySelector('.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.x1xlr1w8')
+                        let headerObj = {
+                            senderName: headerLinkElement ? headerLinkElement.innerText : 'Người tham gia ẩn danh',
+                            groupName: groupNameElement?.innerText ?? ''
+                        }
+                        let ownerLink = headerLinkElement && headerLinkElement.href;
+                        const postLink = postElement.querySelector('a[href*="/posts/"]');
+                        if(!postLink) return;
+
+                        const listImg = [];
+                        const listMedia = postElement.querySelectorAll(".xqtp20y.x6ikm8r.x10wlt62.x1n2onr6");
+                        if(listMedia.length > 0){
+                            listMedia.forEach(qrl => {
+                                    const img = qrl.querySelector('img');
+                                    if(img){
+                                        listImg.push(img.src)
+                                    }
+                            })
+                        }
+                        const obj = {
+                            ...headerObj,
+                            contentPost: contentText,
+                            groupId: splitLink[splitLink.length - 1].replace('?sorting_setting=CHRONOLOGICAL', ''),
+                            ownerId: ownerLink && ownerLink.split('/')[6],
+                            postId: postLink && postLink.href.split('/')[6],
+                            listImg,
+                        }
+
+                        listObj.push(obj);
                     }
-                
-            }
-
-            const obj = {
-                ...headerObj,
-                groupId: splitLink[splitLink.length - 1],
-                ownerId: parseDataset.content_owner_id_new,
-                postId: parseDataset.top_level_post_id,
-                innerText: item.innerText,
-                contentPost: content.innerText,
-                listImg,
-            }
-            listObj.push(obj);
-
-            ipcRenderer.send('send-message', listObj)
-        })
-    `)
+                })
+                if(listObj.length <= 0) return;
+                ipcRenderer.send('send-message', listObj)
+            }, 5000)
+        `
+        }
+        tabWindow.webContents.executeJavaScriptInIsolatedWorld(999, [websource] , true );
     }
 }
 

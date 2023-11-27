@@ -1,10 +1,10 @@
 const env = process.env;
 const listGroups = [
-    'https://mbasic.facebook.com/groups/222582138167532',
-    'https://mbasic.facebook.com/groups/1003813763048708',
-    'https://mbasic.facebook.com/groups/377668529593660',
-    'https://mbasic.facebook.com/groups/1530571577201910',
-    'https://mbasic.facebook.com/groups/203402030827523'
+    'https://www.facebook.com/groups/222582138167532?sorting_setting=CHRONOLOGICAL',
+    'https://www.facebook.com/groups/1003813763048708?sorting_setting=CHRONOLOGICAL',
+    'https://www.facebook.com/groups/377668529593660?sorting_setting=CHRONOLOGICAL',
+    'https://www.facebook.com/groups/1530571577201910?sorting_setting=CHRONOLOGICAL',
+    'https://www.facebook.com/groups/203402030827523?sorting_setting=CHRONOLOGICAL'
 ]
 
 const sendUrl = env.SEND_URL
