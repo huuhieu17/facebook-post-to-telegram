@@ -98,11 +98,11 @@ function openTab(url) {
     // Add the tab window to the array
     tabs.push(tabWindow);
 
-    setInterval(async () => {
-        await tabWindow.reload();
-        fire();
-        scrollWindow()
-    }, timeRefresh)
+    // setInterval(async () => {
+    //     await tabWindow.reload();
+    //     fire();
+    //     scrollWindow()
+    // }, timeRefresh)
 
     function scrollWindow() {
         tabWindow.webContents.executeJavaScript(`
@@ -134,16 +134,17 @@ function openTab(url) {
                             return count;
                         }, 0);
                         console.log(matchPost, contentText, listKeyword)
-                        // if(matchPost < 2) return;
+                        if(matchPost < 2) return;
                        
 
                         const currentLink = document.location.href;
                         const splitLink = currentLink.split('/');
 
                         const headerLinkElement = postElement.querySelector('a[href*="/user/"]');
+                        const headerContent = headerLinkElement && headerLinkElement.querySelector('a[href*="/user/"]');
                         const groupNameElement = document.querySelector('.x1i10hfl.xjbqb8w.x6umtig.x1b1mbwd.xaqea5y.xav7gou.x9f619.x1ypdohk.xt0psk2.xe8uvvx.xdj266r.x11i5rnm.xat24cr.x1mh8g0r.xexx8yu.x4uap5.x18d9i69.xkhd6sd.x16tdsg8.x1hl2dhg.xggy1nq.x1a2a7pz.x1heor9g.xt0b8zv.x1xlr1w8')
                         let headerObj = {
-                            senderName: headerLinkElement ? headerLinkElement.innerText : 'Người tham gia ẩn danh',
+                            senderName: headerContent ? headerContent.getAttribute('aria-label') : headerLinkElement ?  headerLinkElement.innerText : 'Người tham gia ẩn danh',
                             groupName: groupNameElement?.innerText ?? ''
                         }
                         let ownerLink = headerLinkElement && headerLinkElement.href;
