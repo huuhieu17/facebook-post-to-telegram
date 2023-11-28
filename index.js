@@ -24,7 +24,7 @@ function createWindow() {
     });
 
     // Load the Facebook website
-    mainWindow.loadURL('https://mbasic.facebook.com');
+    mainWindow.loadURL('https://mbasic.facebook.com/?_rdr');
 
     // Open the DevTools (remove this line for production)
     mainWindow.webContents.openDevTools();
@@ -134,7 +134,7 @@ function openTab(url) {
                             return count;
                         }, 0);
                         console.log(matchPost, contentText, listKeyword)
-                        if(matchPost < 2) return;
+                        // if(matchPost < 2) return;
                        
 
                         const currentLink = document.location.href;
@@ -186,32 +186,15 @@ function startApp() {
 
     mainWindow.webContents.executeJavaScript(`
         // 
-        const { facebookEmail, facebookPassword } = require('./utils/config');
-        // require('electron').ipcRenderer.send('test', 123)
-       
-        //  ************ FUNCTION REGION
-        function calm(callBack, time) {
-            if(!callBack || !time) return;
-            setTimeout(() => {
-                callBack && callBack();
-            }, time)
-        }
-
-        if(!facebookEmail || !facebookPassword) {
-            alert('Chưa có thông tin đăng nhập facebook');
+        const body = document.body;
+        if(body.innerHTML.includes('Allow the use of cookies from Facebook on this browser?')){
+            const btn = document.querySelector('[name="accept_only_essential"][class="bs"]');
+            btn && btn.click();
         }else{
-            const inputEmail = document.querySelector("#m_login_email");
-            const inputPassword = document.querySelector('[name="pass"]')
-            const buttonLogin = document.querySelector('[name="login"]')
-            inputEmail.value = facebookEmail
-            inputPassword.value = facebookPassword
-            calm(() => {
-                
-                buttonLogin.click()
-            }, 100)
+            alert('Lỗi rồi Hiếu ơi')
         }
-
-        
+     
+        // require('electron').ipcRenderer.send('test', 123)
     `
     );
 
@@ -219,6 +202,31 @@ function startApp() {
         console.log('event', event, 'url', url)
         if (url.includes('https://mbasic.facebook.com/login/save-device')) {
             handleSaveInfoDataPage();
+        }
+        if (url.includes('https://mbasic.facebook.com/?_rdr')){
+                mainWindow.webContents.executeJavaScript(`
+                //  ************ FUNCTION REGION
+                function calm(callBack, time) {
+                    if(!callBack || !time) return;
+                    setTimeout(() => {
+                        callBack && callBack();
+                    }, time)
+                }
+                const { facebookEmail, facebookPassword } = require('./utils/config');
+        
+                if(!facebookEmail || !facebookPassword) {
+                    alert('Chưa có thông tin đăng nhập facebook');
+                }else{
+                    const inputEmail = document.querySelector("#m_login_email");
+                    const inputPassword = document.querySelector('[name="pass"]')
+                    const buttonLogin = document.querySelector('[name="login"]')
+                    inputEmail.value = facebookEmail
+                    inputPassword.value = facebookPassword
+                    calm(() => {
+                        
+                        buttonLogin.click()
+                    }, 100)
+                }`)
         }
         if (url.includes('https://mbasic.facebook.com/?paipv')) {
             listGroups.forEach(item => {
