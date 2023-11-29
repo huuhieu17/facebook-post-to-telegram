@@ -68,8 +68,8 @@ ipcMain.on('send-message', (e, data) => {
 function openTab(url) {
     // Create a new tab window
     const tabWindow = new BrowserWindow({
-        width: 1920,
-        height: 1080,
+        width: 1320,
+        height: 880,
         webPreferences: {
             // preload: path.join(__dirname, 'preload.js'), // Set the preload script
             nodeIntegration: true,
@@ -98,11 +98,11 @@ function openTab(url) {
     // Add the tab window to the array
     tabs.push(tabWindow);
 
-    // setInterval(async () => {
-    //     await tabWindow.reload();
-    //     fire();
-    //     scrollWindow()
-    // }, timeRefresh)
+    setInterval(async () => {
+        await tabWindow.reload();
+        fire();
+        scrollWindow()
+    }, timeRefresh)
 
     function scrollWindow() {
         tabWindow.webContents.executeJavaScript(`
@@ -117,7 +117,7 @@ function openTab(url) {
             code: `
             const listObj = [];
             const ipcRenderer = require('electron').ipcRenderer;
-            const { listKeyword } = require('./utils/config');
+            const { listKeyword, listSkip } = require('./utils/config');
             const feed = document.querySelector("[role='feed']");
             setTimeout(() => {
                 const posts = document.querySelectorAll('.x1yztbdb.x1n2onr6.xh8yej3.x1ja2u2z');
@@ -133,8 +133,17 @@ function openTab(url) {
                             }
                             return count;
                         }, 0);
+
+                        const skipText = listSkip.reduce((count, item) => {
+                            if (contentText.includes(item)) {
+                                return count + 1;
+                            }
+                            return count;
+                        }, 0);
+
+                        if(skipText > 0) return;
+
                         console.log(matchPost, contentText, listKeyword)
-                        if(matchPost < 2) return;
                        
 
                         const currentLink = document.location.href;
@@ -148,8 +157,7 @@ function openTab(url) {
                             groupName: groupNameElement?.innerText ?? ''
                         }
                         let ownerLink = headerLinkElement && headerLinkElement.href;
-                        const postLink = postElement.querySelector('a[href*="/posts/"]');
-                        if(!postLink) return;
+                        const postLink = postElement.querySelector('[href*="/posts/"]');
 
                         const listImg = [];
                         const listMedia = postElement.querySelectorAll(".xqtp20y.x6ikm8r.x10wlt62.x1n2onr6");
